@@ -14,10 +14,17 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import GameArt from '@/components/GameArt';
 
 interface RsvpName {
   id: string;
   name: string;
+}
+
+interface HostStats {
+  nightsHosted: number;
+  playersBroughtTogether: number;
+  foundingHost: boolean;
 }
 
 interface NightData {
@@ -35,6 +42,7 @@ interface NightData {
   rsvpCount: number;
   spotsLeft: number;
   rsvps: RsvpName[];
+  hostStats?: HostStats;
 }
 
 function formatWhen(iso: string): string {
@@ -140,7 +148,9 @@ export default function NightPage() {
       ) : (
         <>
           {/* Night header */}
-          <section className="card rounded-card p-6 shadow-card sm:p-8">
+          <section className="card overflow-hidden rounded-card shadow-card">
+            <GameArt game={data.night.game} className="h-48 w-full sm:h-64" />
+            <div className="p-6 sm:p-8">
             <div className="flex flex-wrap items-center gap-2">
               <span className="rounded-full border border-montu-line bg-montu-surface-2 px-3 py-1 text-xs font-bold uppercase tracking-wider text-montu-ink-2">
                 Game night
@@ -150,12 +160,24 @@ export default function NightPage() {
                   {data.night.vibe}
                 </span>
               )}
+              {data.hostStats?.foundingHost && (
+                <span className="rounded-full bg-montu-pink px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">
+                  Founding host
+                </span>
+              )}
             </div>
             <h1 className="display mt-3 text-4xl text-montu-ink sm:text-5xl">
               {data.night.game}
               <br />
               <span className="text-montu-lime">with {data.night.hostName}</span>
             </h1>
+            {data.hostStats && data.hostStats.nightsHosted > 0 && (
+              <p className="mt-2 text-sm text-montu-ink-2">
+                {data.hostStats.nightsHosted} {data.hostStats.nightsHosted === 1 ? 'night' : 'nights'} hosted
+                {' · '}
+                {data.hostStats.playersBroughtTogether} {data.hostStats.playersBroughtTogether === 1 ? 'player' : 'players'} brought together
+              </p>
+            )}
             <p className="mt-3 text-lg font-semibold text-montu-ink">{formatWhen(data.night.scheduledAt)}</p>
             {data.night.notes && <p className="mt-2 text-montu-ink-2">{data.night.notes}</p>}
 
@@ -169,6 +191,7 @@ export default function NightPage() {
               <span className="text-sm font-bold text-montu-ink">
                 {data.spotsLeft > 0 ? `${data.spotsLeft} ${data.spotsLeft === 1 ? 'spot' : 'spots'} left` : 'Full house'}
               </span>
+            </div>
             </div>
           </section>
 
@@ -211,7 +234,7 @@ export default function NightPage() {
               <>
                 <h2 className="display text-3xl text-montu-ink">Claim your seat</h2>
                 <p className="mt-2 text-sm text-montu-ink-2">
-                  No app, no account. Just a name and a phone number — we text you when your squad is ready.
+                  Takes 30 seconds. No app, no account, no begging in the group chat. Just a name and a number, and we text you when your squad is ready.
                 </p>
                 <form onSubmit={handleJoin} className="mt-6 space-y-4">
                   <div>

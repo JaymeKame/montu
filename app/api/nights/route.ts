@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminCredentialsConfigured, adminDb } from '@/lib/firebase-admin';
 import type { CreateNightBody, Night } from '@/lib/protocol';
+import { getHostStats } from '@/lib/host-stats';
 
 function noCreds() {
   return NextResponse.json(
@@ -29,6 +30,20 @@ async function uniqueCode(): Promise<string> {
     if (snap.empty) return code;
   }
   throw new Error('Could not generate a unique night code.');
+}
+
+/** GET /api/nights?hostId=... — host stats for /creator.
+ *  Returns {stats: {nightsHosted, playersBroughtTogether, foundingHost}}.
+ *  No hostId → 400. */
+export async function GET(req: NextRequest) {
+  if (!adminCredentialsConfigured()) return noCreds();
+  const hostId = req.nextUrl.searchParams.get('hostId')?.trim();
+  if (!hostId) {
+    return NextResponse.json({ error: 'hostId query param is required.' }, { status: 400 });
+  }
+  const db = adminDb();
+  const stats = await getHostStats(db, hostId);
+  return NextResponse.json({ stats });
 }
 
 /** POST /api/nights — a creator makes a game night.

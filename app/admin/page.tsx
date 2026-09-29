@@ -260,7 +260,7 @@ export default async function AdminPage({ searchParams }: { searchParams: Search
                     </div>
                     <div>
                       <label className="block text-xs font-medium" htmlFor={`ni-voice-${n.id}`}>
-                        Voice chat link
+                        Voice / Discord invite
                       </label>
                       <input
                         id={`ni-voice-${n.id}`}

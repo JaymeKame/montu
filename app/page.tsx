@@ -79,7 +79,7 @@ export default function HomePage() {
           <span className="text-montu-lime">Come play.</span>
         </h1>
         <p className="mx-auto mt-5 max-w-xl text-lg text-montu-ink-2">
-          The world tries to tell you you are nothing. We believe you are family. Montu is AI that finds your people and gets you into the game together, exceptionally well, every time.
+          Tell us what you want to play. Our AI finds your people and sets the night. No scrolling, no begging for a lobby.
         </p>
       </section>
 
@@ -121,7 +121,7 @@ export default function HomePage() {
           <>
             <h2 className="display text-3xl text-montu-ink">Find my squad</h2>
             <p className="mt-2 text-sm text-montu-ink-2">
-              Takes 30 seconds. We do the matchmaking, you just play.
+              Takes 30 seconds. No app, no begging in the group chat. Say what you want to play — our AI does the awkward herding work while you live your life.
             </p>
             <form onSubmit={handleSubmit} className="mt-6 space-y-5">
               <div>

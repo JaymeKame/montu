@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { adminCredentialsConfigured, adminDb } from '@/lib/firebase-admin';
 import type { Night, NightRsvp } from '@/lib/protocol';
+import { getHostStats } from '@/lib/host-stats';
 
 function noCreds() {
   return NextResponse.json(
@@ -47,5 +48,6 @@ export async function GET(
     rsvpCount: rsvps.length,
     spotsLeft: Math.max(0, night.squadSize - rsvps.length),
     rsvps,
+    hostStats: await getHostStats(db, night.hostId),
   });
 }

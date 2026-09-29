@@ -5,7 +5,7 @@
  *
  * Signed-in creator (anonymous auth is fine) picks game, date/time, squad
  * size, vibe, and notes. Optional "how to join" details (lobby code, party
- * invite link, voice chat link) can be set now or left for later. On success
+ * invite link, Voice / Discord invite) can be set now or left for later. On success
  * the page becomes a share card: /n/[code] plus a copy button.
  *
  * Copy rule: belonging-first, fun-first. No duty/commitment language.
@@ -308,15 +308,16 @@ export default function NewNightPage() {
                     />
                   </div>
                   <div>
-                    <label htmlFor="n-voice" className="mb-1 block text-xs font-semibold text-montu-ink-2">Voice chat link</label>
+                    <label htmlFor="n-voice" className="mb-1 block text-xs font-semibold text-montu-ink-2">Voice / Discord invite</label>
                     <input
                       id="n-voice"
                       type="url"
                       value={voiceLink}
                       onChange={(e) => setVoiceLink(e.target.value)}
-                      placeholder="https://…"
+                      placeholder="https://discord.gg/…"
                       className={`${inputClass} py-2 text-sm`}
                     />
+                    <p className="mt-1 text-[11px] text-montu-ink-3">Your Discord invite — we don&apos;t host voice.</p>
                   </div>
                 </div>
               </div>

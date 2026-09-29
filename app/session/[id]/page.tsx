@@ -24,6 +24,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/components/AuthProvider';
+import GameArt from '@/components/GameArt';
 
 interface Participant {
   userId?: string;
@@ -254,6 +255,7 @@ export default function SessionPage() {
         <>
           {/* The room: countdown hero */}
           <section className="card overflow-hidden rounded-card shadow-card">
+            <GameArt game={session.game ?? 'Game night'} className="h-40 w-full sm:h-52" />
             <div className="bg-gradient-to-br from-montu-violet/30 via-montu-surface to-montu-bg p-6 sm:p-8">
               <div className="flex flex-wrap items-center gap-2">
                 <span className="rounded-full border border-montu-line bg-montu-bg/60 px-3 py-1 text-xs font-bold uppercase tracking-wider text-montu-ink-2">
@@ -341,8 +343,8 @@ export default function SessionPage() {
                     className="flex items-center justify-between gap-3 rounded-button border border-montu-line bg-montu-bg px-4 py-3 hover:border-montu-lime"
                   >
                     <div>
-                      <div className="text-xs font-bold uppercase tracking-wider text-montu-ink-3">Voice chat</div>
-                      <div className="font-semibold text-montu-lime">Tap to join voice →</div>
+                      <div className="text-xs font-bold uppercase tracking-wider text-montu-ink-3">Voice / Discord</div>
+                      <div className="font-semibold text-montu-lime">Tap to join →</div>
                     </div>
                   </a>
                 )}

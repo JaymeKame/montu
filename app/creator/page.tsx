@@ -8,12 +8,20 @@
  * client SDK: {name, handle, email, audienceSize, game, createdAt}.
  */
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { addDoc, collection, serverTimestamp } from 'firebase/firestore';
 import { getDb } from '@/lib/firebase';
+import { useAuth } from '@/components/AuthProvider';
+
+interface HostStats {
+  nightsHosted: number;
+  playersBroughtTogether: number;
+  foundingHost: boolean;
+}
 
 export default function CreatorPage() {
+  const { user } = useAuth();
   const [name, setName] = useState('');
   const [handle, setHandle] = useState('');
   const [email, setEmail] = useState('');
@@ -21,6 +29,17 @@ export default function CreatorPage() {
   const [game, setGame] = useState('');
   const [status, setStatus] = useState<'idle' | 'sending' | 'done' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState('');
+  const [hostStats, setHostStats] = useState<HostStats | null>(null);
+
+  useEffect(() => {
+    if (!user?.uid) return;
+    fetch(`/api/nights?hostId=${encodeURIComponent(user.uid)}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (data && data.stats) setHostStats(data.stats as HostStats);
+      })
+      .catch(() => {});
+  }, [user?.uid]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -69,7 +88,31 @@ export default function CreatorPage() {
         <p className="mx-auto mt-5 max-w-xl text-lg text-montu-ink-2">
           Stop shouting into a chat full of lurkers. You set the game and the night, we match your community into real squads and fill every lobby.
         </p>
+        <p className="mx-auto mt-3 max-w-xl text-base font-semibold text-montu-pink">
+          You bring the game. We bring the players.
+        </p>
       </section>
+
+      {/* Signed-in host's own stats */}
+      {hostStats && hostStats.nightsHosted > 0 && (
+        <section className="card mt-8 rounded-card border-montu-pink/40 p-6 text-center shadow-card">
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            {hostStats.foundingHost && (
+              <span className="rounded-full bg-montu-pink px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">
+                Founding host
+              </span>
+            )}
+            <span className="text-sm font-semibold text-montu-ink-2">
+              {hostStats.nightsHosted} {hostStats.nightsHosted === 1 ? 'night' : 'nights'} hosted
+              {' · '}
+              {hostStats.playersBroughtTogether} {hostStats.playersBroughtTogether === 1 ? 'player' : 'players'} brought together
+            </span>
+          </div>
+          <Link href="/creator/nights/new" className="mt-4 inline-block text-sm font-bold text-montu-pink hover:underline">
+            Host another night →
+          </Link>
+        </section>
+      )}
 
       <section className="mt-12 grid gap-3 sm:grid-cols-3">
         {[
@@ -84,8 +127,21 @@ export default function CreatorPage() {
         ))}
       </section>
 
+      {/* Founding hosts */}
+      <section className="card mt-6 rounded-card border-montu-pink/40 p-6 shadow-card sm:p-8">
+        <div className="flex flex-wrap items-center justify-center gap-2">
+          <span className="rounded-full bg-montu-pink px-3 py-1 text-xs font-bold uppercase tracking-wider text-white">
+            Founding host
+          </span>
+          <h2 className="display text-2xl text-montu-ink">First 25 hosts, forever</h2>
+        </div>
+        <p className="mx-auto mt-3 max-w-md text-montu-ink-2">
+          The first 25 hosts get a permanent Founding host badge on every game night, and first dibs when paid nights turn on. No money to promise yet — we promise players instead.
+        </p>
+      </section>
+
       <section className="card mt-6 rounded-card p-6 text-center shadow-card sm:p-8">
-        <h2 className="display text-3xl text-montu-ink">Make tonight's game night</h2>
+        <h2 className="display text-3xl text-montu-ink">Make tonight&apos;s game night</h2>
         <p className="mx-auto mt-2 max-w-md text-montu-ink-2">
           Pick your game and time, get one link to share. Your community taps in — no app, no account.
         </p>
