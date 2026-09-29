@@ -91,6 +91,19 @@ export function normalizeGame(name: string): string {
   return ALIASES[n] ?? n;
 }
 
+/** Resolve a Steam app ID for a free-text title. Exact/alias match first,
+ *  then longest-substring match so "Call of Duty: Warzone" still lands on
+ *  the Call of Duty HQ art. Short keys (<4 chars) only match exactly. */
+export function resolveAppId(game: string): number | undefined {
+  const norm = normalizeGame(game);
+  if (APP_IDS[norm] !== undefined) return APP_IDS[norm];
+  const keys = Object.keys(APP_IDS).sort((a, b) => b.length - a.length);
+  for (const k of keys) {
+    if (k.length >= 4 && norm.includes(k)) return APP_IDS[k];
+  }
+  return undefined;
+}
+
 export interface GameArt {
   /** Steam CDN URL when the title is known; undefined otherwise. */
   src?: string;
@@ -114,8 +127,8 @@ export function gameArt(game: string): GameArt {
     initial: (label[0] ?? 'M').toUpperCase(),
     label,
   };
-  const appId = APP_IDS[norm];
-  if (appId) {
+  const appId = resolveAppId(label);
+  if (appId !== undefined) {
     art.src = `${STEAM_CDN}/${appId}/${HERO_CAPSULE}`;
   }
   return art;
